@@ -3,9 +3,25 @@ import XCTest
 
 final class Swift_DictionaryAPITests: XCTestCase {
     func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(Swift_DictionaryAPI().text, "Hello, World!")
+        let exp = expectation(description: "Fetch entries")
+        DictionaryAPI().getDefinitions(forWord: "spicy") { result in
+            exp.fulfill()
+            switch result {
+                case .success(let definitions):
+                    definitions.forEach { definition in
+                        print("--- \"\(definition.definition)\"")
+                        print("e.g. \(definition.example)")
+                    }
+                case .failure(let error):
+                    print(error)
+            }
+        }
+        
+        waitForExpectations(timeout: 30) { error in
+            if let error = error {
+                XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+            }
+            XCTAssertEqual(true, true)
+        }
     }
 }
